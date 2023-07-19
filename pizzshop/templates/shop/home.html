@@ -1,0 +1,183 @@
+{% extends 'shop/base.html' %}
+
+{% load static %}
+{% block css_file %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="{% static 'shop/css/bootstrap.css' %}">
+<link rel="stylesheet" href="{% static 'shop/home.css' %}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+{% endblock css_file %}
+
+{% block content %}
+{% include "shop/nav.html" %}
+<div class=" d-flex">
+    <div class="col col-9">
+    {% if items %}
+        {% for j in type %}
+            <h3 class="text-center bg-dark text-white">{{j.name}}</h3>
+            <ul class="list1">
+                    {% for i in items %}
+                        {% if j.id == i.type.id %}
+                        <li>
+                            <div class="card h-100 w-100">
+                                <img src="{{i.img.url}}" alt="" class="card-img-top">
+                                <span class="bottom-left">{{i.price}}</span>
+                                <div class="card-body">
+                                    <p class="card-tilte h5 text-center bg-dark text-white">{{i.item}}</p>
+                                    <p class="card-text h5 text-left">{{i.desc}}</p>
+                                </div>
+                                <div class="card-footer d-flex justify-content-end">
+                                    <form class="d-flex ">
+                                        {% csrf_token %}
+                                        {% if i.item not in l %}
+                                            <button class="act  btn btn-primary " data-id="{{ i.id }}" >Add</button>
+                                        {% endif %}
+                                        {% if i.item in l %}
+                                        {% comment %} <button class="del btn btn-primary" data-delid="{{ i.id }}">del</button> {% endcomment %}
+                                        <div class="mx-1 border ">
+                                            {% for k in cart %}
+                                                {% if i.item ==  k.item %}
+
+                                                    <a href="#" role="button" class="del btn btn-dark" data-delid="{{ i.id }}">
+                                                        {% if k.count > 1%}
+                                                            -
+                                                        {% else %}
+                                                        <i class="fa-solid fa-trash fa-xl"></i>
+                                                        {% endif %}
+                                                    </a>
+                                                    <a class="mx-2 h4 p-1">{{k.count}}</a>
+                                                    <a href="#" role="button" class="act btn btn-dark" data-id="{{ i.id }}">+</a>
+
+                                                {% endif %} 
+                                            {% endfor %}
+                                            
+                                        </div>
+                                        {% endif %} 
+
+                                    </form>
+                            </div>
+                            </div>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+            </ul>
+        {% endfor %}
+    {% endif %}
+    </div>
+    <div class="cart col col-3">
+        <h3 class="text-center bg-dark text-white h2">Cart</h3>
+        <h1 class="noti"></h1>
+        <ul class="list">
+        {% for j in items %}
+            {% for i in cart %}
+            {% if i.item == j.item %}
+            <li>
+                <div class="card d-flex">
+                    <img src="{{i.img.url}}" alt="" class="card-img-top ">
+                    <div class="card-body">
+                        <p class="card-tilte">{{i.item}}</p>
+                        <div class="d-flex justify-content-evenly h5">
+                            <p class="card-text">Price:{{i.price}}</p>
+                            <p class="card-text">Total:{{i.total_price}}</p>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <form action="">
+                            <a href="#" role="button" class="del btn btn-dark" data-delid="{{ j.id }}">
+                                {% if i.count > 1%}
+                                    -
+                                {% else %}
+                                <i class="fa-solid fa-trash fa-xl"></i>
+                                {% endif %}
+                            </a>
+                            <a class="mx-2 h4 p-1">{{i.count}}</a>
+                            <a href="#" role="button" class="act btn btn-dark" data-id="{{ j.id }}">+</a>
+                        </form>
+                    </div>
+                </div>
+            </li>
+            {% endif %}
+            {% endfor %}
+            {% endfor %}
+            {% if cart %}
+                <p class="h1">Total:{{total}}</p>
+                <a href="{% url 'order' %}" class="btn btn-primary w-100" role="submit">Order</a>
+            {% endif %}
+        </ul>
+        
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block js_file %}
+<script>
+    $(document).ready(function() {
+        $(".act").on("click", function(e) {
+        e.preventDefault();
+        var itemId = $(this).data("id");
+        $.ajax({
+            type: "POST",
+            url: "{% url 'cart_item' %}",
+            data: {
+                "item_id": itemId,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+            },
+            success: function(data) {
+                $(".noti").html("pizza  is added");
+                        $(".noti").fadeOut(3000, function() {
+                            $(this).remove()});
+
+                $.ajax({
+                    type:"GET",
+                    url:"{% url 'cart' %}",
+                    success:(data)=>{
+                        var temp=""
+                        var img=""
+                        console.log(data)
+                        for(i in data){
+                            temp += "<li><h1>"+data[i].fields.item+data[i].fields.count+"</h1></li>"
+                            img  +='<li><img src=" ' + data[i].fields.img + ' "></li>' 
+
+                            {% comment %} $(".name").html('<li><img src=" ' +data.url+  ' "/></li>') {% endcomment %}
+                        }
+                        console.log(img)
+                        console.log(temp)
+                        $(".name").html(temp)
+                    },
+                    error:()=>{
+                        console.log("error")
+                    }
+                })
+                window.location.reload()
+                },
+            error: function(error) {
+                console.log(error);
+            }
+            });
+        });
+
+        $(".del").on("click", function(e) {
+            e.preventDefault();
+            var delId = $(this).data("delid");
+            $.ajax({
+                type: "POST",
+                url: "{% url 'del' %}",
+                data: {
+                    "del_id": delId,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                },
+                success: function() {
+                    console.log("Item deleted from cart",delId);
+                    window.location.reload()
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        });
+    });
+</script>
+<script src="{% static 'shop/js/dark.js' %}"></script>
+{% endblock js_file %}
+

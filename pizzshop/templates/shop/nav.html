@@ -1,0 +1,36 @@
+{% extends 'shop/base.html' %}
+
+{% load static %}
+
+{% block css_file %}
+<link rel="stylesheet" href="{% static 'shop/nav.css' %}">
+{% endblock css_file %}
+
+{% block content %}
+<nav class="main">
+    <ul class="nav">
+        <li>
+            <img src="{% static 'shop\Dominos-logo.jpg' %}" alt="">
+            
+        </li>
+        <li class="heading">
+            <a href="{% url 'home' %}"><h1>PizzaShop</h1></a>
+        </li>
+        <li>
+            <div class="container">
+                <input type="checkbox" name="" id="check">
+                <label for="check" class="button"></label>
+            </div>
+        </li>
+    </ul>
+</nav>
+{% endblock content %}
+{% block js_file %}
+<script src="{% static 'shop/js/dark.js' %}"></script>
+{% endblock js_file %}
+
+
+
+
+
+

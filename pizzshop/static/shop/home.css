@@ -1,0 +1,36 @@
+*{
+    padding: 0%;
+    margin: 0%;
+    box-sizing: border-box;
+}
+.list1{
+    background-color: darkgrey;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction:row;
+    /* justify-content: start; */
+}
+.list1>li{
+    margin: 10px;
+    /* background-color: red; */
+    width: 30%;
+}
+.bottom-left {
+    color: whitesmoke;
+    font-weight: bold;
+    font-size: 20px;
+    position: absolute;
+    top:25%;
+    left: 10px;
+}
+.cart{
+    position:sticky;
+}
+.cart>ul{
+    list-style-type: none;
+    /* background-color:gray; */
+}
+.cart>ul>li{
+    margin-bottom: 20px;
+}

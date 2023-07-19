@@ -1,0 +1,42 @@
+{% extends 'shop/base.html' %}
+
+
+{% block title %}
+Order
+{% endblock title %}
+
+{% load static %}
+
+{% block css_file %}
+<link rel="stylesheet" href="{% static 'shop/css/bootstrap.css' %}">
+<link rel="stylesheet" href="{% static 'shop/order.css' %}">
+{% endblock css_file %}
+
+
+
+{% block content %}
+{% comment %} {% include "shop/nav.html" %} {% endcomment %}
+<div class="box">
+    <form method="POST">
+        {% csrf_token %}
+        <table class="table  table-borderless">
+            <tr>
+                <td><input type="text" name="name"  class="inp" pattern="[a-z A-Z]+" title="Enter name" placeholder="Name"></td>
+            </tr>
+            <tr>
+                <td><input type="tel" name=""   class="inp" pattern="[6-9]{1}[0-9]{9}" title="Enter mobile" placeholder="Mobile"></td>
+            </tr>
+            <tr>
+                <td> <textarea name=""  cols="20" rows="2" placeholder="Address"></textarea> </td>
+            </tr>
+            <tr >
+                <td>
+                    <button role="submit" class="btn btn-primary w-100">Order</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+{% endblock content %}
+
+
